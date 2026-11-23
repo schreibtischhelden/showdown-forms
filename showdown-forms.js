@@ -68,7 +68,8 @@
 
 	function parseFormAttributes(text) {
 		var attrs = {};
-		text.replace(/(\w+)\s*=\s*"([^"]*)"/g, function (match, key, value) {
+		// fixed keywords and at most one space around "=" keep this linear (no ReDoS)
+		text.replace(/\b(action|method)\s?=\s?"([^"]*)"/gi, function (match, key, value) {
 			attrs[key.toLowerCase()] = value.trim();
 			return match;
 		});
@@ -164,13 +165,27 @@
 			if (!line) {
 				return;
 			}
-			var submit = /^\[\[\s*(.+?)\s*\]\]$/.exec(line);
-			if (submit) {
-				html += '<button type="submit">' + escapeHtml(submit[1]) + '</button>';
-				return;
+			// line parsing uses string operations instead of regexes (no ReDoS on long lines)
+			if (line.length > 4 && line.slice(0, 2) === '[[' && line.slice(-2) === ']]') {
+				var buttonText = line.slice(2, -2).trim();
+				if (buttonText) {
+					html += '<button type="submit">' + escapeHtml(buttonText) + '</button>';
+					return;
+				}
 			}
-			var field = /^([^=]+?)\s*(\*)?\s*=\s*(.+)$/.exec(line);
-			var rendered = field ? renderField(field[1], !!field[2], field[3].trim(), formId + '-' + index, opts) : null;
+			var rendered = null;
+			var eq = line.indexOf('=');
+			if (eq > 0) {
+				var label = line.slice(0, eq).trim();
+				var required = label.slice(-1) === '*';
+				if (required) {
+					label = label.slice(0, -1).trim();
+				}
+				var value = line.slice(eq + 1).trim();
+				if (label && value) {
+					rendered = renderField(label, required, value, formId + '-' + index, opts);
+				}
+			}
 			// anything else is shown as plain (escaped) text
 			html += rendered !== null ? rendered : '<p>' + escapeHtml(line) + '</p>';
 		});

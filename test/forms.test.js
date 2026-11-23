@@ -56,9 +56,47 @@ test('submit button and plain text lines', () => {
 
 test('labels and values are HTML-escaped', () => {
 	const html = render('<img src=x onerror=alert(1)> = ___\nX = {"><script>alert(1)</script>}\nY = (x) <b>"\'\n<script>alert(1)</script>');
-	assert.doesNotMatch(html, /<img|<script|<b>/);
+	assert.doesNotMatch(html, /<script|<svg|<img|<b>/i);
 	assert.match(html, /&lt;img src=x onerror=alert\(1\)&gt;/);
 	assert.match(html, /value="&quot;&gt;&lt;script&gt;/);
+});
+
+test('line parsing: required marker, empty parts, submit edge cases', () => {
+	assert.match(render('Name * = ___'), /<label for="sdf-form-1-0">Name <span aria-hidden="true">\*<\/span><\/label><input [^>]*required>/);
+	assert.match(render('= ___'), /<p>= ___<\/p>/);
+	assert.match(render('Name ='), /<p>Name =<\/p>/);
+	assert.match(render('* = ___'), /<p>\* = ___<\/p>/);
+	assert.match(render('[[]]'), /<p>\[\[\]\]<\/p>/);
+	assert.match(render('[[   ]]'), /<p>\[\[   \]\]<\/p>/);
+	assert.match(render('[[Send]]'), /<button type="submit">Send<\/button>/);
+});
+
+test('form attributes: only action and method, keys case-insensitive', () => {
+	const html = render('A = ___', { attributes: 'ACTION="/send" Method="GET" onsubmit="alert(1)"' });
+	assert.match(html, /<form id="sdf-form-1" method="get" action="\/send">/);
+	assert.doesNotMatch(html, /onsubmit/i);
+});
+
+test('long malicious lines are processed in linear time (no ReDoS)', () => {
+	const inputs = [
+		'[[' + ' '.repeat(50000) + 'a',
+		'<' + ' '.repeat(50000),
+		'a' + ' '.repeat(50000) + '*' + ' '.repeat(50000) + 'x',
+		'a'.repeat(50000) + ' = ' + '('.repeat(50000),
+	];
+	for (const body of inputs) {
+		const start = process.hrtime.bigint();
+		render(body);
+		assert.ok(Number(process.hrtime.bigint() - start) / 1e6 < 200, 'body ' + JSON.stringify(body.slice(0, 5)));
+	}
+	const start = process.hrtime.bigint();
+	render('A = ___', { attributes: 'a'.repeat(50000) + ' ' + 'action='.repeat(10000) });
+	render('A = ___', { attributes: 'a'.repeat(50000) });
+	assert.ok(Number(process.hrtime.bigint() - start) / 1e6 < 200, 'attributes');
+	const md = ':::form\n' + '[[' + ' '.repeat(50000) + 'a\n:::\n';
+	const t0 = process.hrtime.bigint();
+	convert(md);
+	assert.ok(Number(process.hrtime.bigint() - t0) / 1e6 < 2000, 'showdown round trip');
 });
 
 test('field names only contain letters, digits, "_" and "-"', () => {
