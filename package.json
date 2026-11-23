@@ -1,0 +1,46 @@
+{
+	"name": "@schreibtischhelden/showdown-forms",
+	"version": "1.0.0",
+	"description": "Showdown extension: HTML forms from simple :::form blocks in Markdown, with escaping and safe defaults.",
+	"keywords": [
+		"showdown",
+		"showdown-extension",
+		"markdown",
+		"forms"
+	],
+	"homepage": "https://github.com/schreibtischhelden/showdown-forms#readme",
+	"bugs": "https://github.com/schreibtischhelden/showdown-forms/issues",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/schreibtischhelden/showdown-forms.git"
+	},
+	"license": "MIT",
+	"author": "Tobias Fichtner",
+	"main": "./showdown-forms.js",
+	"types": "./index.d.ts",
+	"exports": {
+		".": {
+			"types": "./index.d.ts",
+			"import": "./index.mjs",
+			"require": "./showdown-forms.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"showdown-forms.js",
+		"index.mjs",
+		"index.d.ts"
+	],
+	"engines": {
+		"node": ">=20"
+	},
+	"scripts": {
+		"test": "node --test"
+	},
+	"peerDependencies": {
+		"showdown": "^2.0.0"
+	},
+	"devDependencies": {
+		"showdown": "^2.1.0"
+	}
+}
