@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 - unreleased
+## 1.0.0 - 2026-11-24
 
 Rewrite as a Showdown 2.x extension (the previous repository bundled a copy of Showdown from 2011).
 
