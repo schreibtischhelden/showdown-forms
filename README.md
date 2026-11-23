@@ -112,6 +112,12 @@ npm install
 npm test
 ```
 
+## Releasing
+
+1. Set the new version in `package.json` and add it to `CHANGELOG.md`.
+2. Commit, then tag and push: `git tag v1.2.3 && git push origin v1.2.3`.
+3. The [Release workflow](.github/workflows/release.yml) runs the tests and publishes to npm with provenance (npm Trusted Publishing; the secret `NPM_TOKEN` is only a fallback).
+
 ## License
 
 [MIT](LICENSE)
