@@ -35,7 +35,8 @@
 		"node": ">=20"
 	},
 	"scripts": {
-		"test": "node --test"
+		"test": "node --test",
+		"release-notes": "node scripts/release-notes.mjs"
 	},
 	"peerDependencies": {
 		"showdown": "^2.0.0"
