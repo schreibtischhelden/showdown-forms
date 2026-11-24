@@ -34,6 +34,7 @@ test('merge and release commits are skipped', () => {
 	assert.equal(classify(commit('Release 1.0.0')), null);
 	assert.equal(classify(commit('v1.2.3')), null);
 	assert.equal(classify(commit('Release notes from commit messages')).group, 'other');
+	assert.equal(classify(commit('chore(release): generate notes')).group, 'maintenance');
 });
 
 test('formatNotes renders sections in a fixed order and omits empty ones', () => {

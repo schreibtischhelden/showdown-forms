@@ -27,7 +27,7 @@ const GROUPS = [
 ];
 const MAINTENANCE = new Set(['chore', 'ci', 'build', 'test', 'refactor', 'style', 'revert']);
 const CONVENTIONAL = /^(\w+)(?:\(([^)]*)\))?(!)?:\s*(.+)$/;
-const RELEASE = /^(?:chore\(release\):|release v?\d+\.\d+\.\d+|v?\d+\.\d+\.\d+$)/i;
+const RELEASE = /^(?:chore\(release\):\s*|release\s+)?v?\d+\.\d+\.\d+\s*$/i;
 
 /** Parses one commit `{ hash, subject, body }` into `{ group, text }`, or null to skip it. */
 export function classify(commit) {
