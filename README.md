@@ -114,9 +114,11 @@ npm test
 
 ## Releasing
 
-1. Set the new version in `package.json` and add it to `CHANGELOG.md`.
-2. Commit, then tag and push: `git tag v1.2.3 && git push origin v1.2.3`.
-3. The [Release workflow](.github/workflows/release.yml) runs the tests and publishes to npm with provenance (npm Trusted Publishing; the secret `NPM_TOKEN` is only a fallback).
+1. Set the new version in `package.json` and commit it (`Release 1.2.3`).
+2. Tag and push: `git tag v1.2.3 && git push origin v1.2.3`.
+3. The [Release workflow](.github/workflows/release.yml) runs the tests, publishes to npm with provenance (npm Trusted Publishing; the secret `NPM_TOKEN` is only a fallback) and creates the GitHub release.
+
+There is no changelog file: the release notes are generated from the commit messages since the previous tag ([`scripts/release-notes.mjs`](scripts/release-notes.mjs), `npm run release-notes` shows them locally). Changes are listed on the [releases page](https://github.com/schreibtischhelden/showdown-forms/releases).
 
 ## License
 
